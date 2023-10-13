@@ -47,6 +47,10 @@ class JiraStoryMapper(StoryMapper):
         
         return mapped
 
+class DevOpsStoryMapper(StoryMapper):
+    def map(data):
+        pass
+
 class Item:
     def __init__(self, key, content):
         self.key = key
