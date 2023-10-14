@@ -1,94 +1,14 @@
 from datetime import datetime
 from dotenv import load_dotenv
-import requests, openai, os, json, base64
+import os
+
+from classes.strapi_client import StrapiClient
+from classes.jira_story_mapper import JiraStoryMapper
+from classes.jira_story_controller import JiraStoryController
+from classes.releasenote import Releasenote
 
 load_dotenv()
 
-openai.api_key = os.environ.get('OPEN_AI_API_KEY')
-
-class StrapiClient:
-    def __init__(self):
-        response = requests.post(os.environ.get('STRAPI_URL') + '/api/auth/local', data=json.dumps({'identifier': os.environ.get('STRAPI_IDENTIFIER'), 'password': os.environ.get('STRAPI_PASSWORD')}), headers={'Content-Type': 'application/json'})
-        
-        if response.status_code == 200:
-            self.jwt = response.json()['jwt']
-        else:
-            print('Error occurred:', response.status_code)
-
-    def post(self, endpoint, data={}):
-        response = requests.post(os.environ.get('STRAPI_URL') + endpoint, data=json.dumps(data), headers={'Authorization': 'Bearer {}'.format(self.jwt), 'Content-Type': 'application/json'})
-
-        if response.status_code == 200:
-            return True
-        
-        print('Error occurred:', response.status_code)
-
-
-class JiraClient:
-    def get(query):
-        auth = (os.environ.get('JIRA_USERNAME'), os.environ.get('JIRA_API_TOKEN'))
-
-        response = requests.get(os.environ.get('JIRA_URL') + '/rest/api/2/search', params={'jql': query}, headers={'Content-Type': 'application/json'}, auth=auth)
-        
-        if response.status_code == 200:
-            return response.json()['issues']
-        
-        print('Error occurred:', response.status_code)
-
-class StoryMapper:
-    def map(data):
-        pass
-
-class JiraStoryMapper(StoryMapper):
-    def map(data):
-        mapped = []
-        for field in data:
-            mapped.append(Item(field['key'], field['fields']['description']))
-        
-        return mapped
-
-class DevOpsStoryMapper(StoryMapper):
-    def map(data):
-        pass
-
-class Item:
-    def __init__(self, key, content):
-        self.key = key
-        self.content = content
-
-    def __str__(self):
-        return '{}, {}'.format(self.key, self.content)
-
-class StoryController:
-    def getStoriesByQuery(query):
-        pass
-
-class JiraStoryController(StoryController):
-    def getStoriesByQuery(query):
-        return JiraClient.get(query)
-    
-class DevOpsStoryController(StoryController):
-    def getStoriesByQuery(query):
-        pass
-
-class Releasenote:
-    def __init__(self, input):
-        self.input = input
-
-    def generate(self):
-        response = openai.ChatCompletion.create(
-            model = 'gpt-4',
-            messages = [
-                {'role': 'system', 'content': 'You are a helpful assistant.'},
-                {'role': 'user', 'content': 'GPT, please create user-friendly release notes for the following update, focusing on the new features and enhancements. Ignore the sections on \'Acceptance\', \'How to test\', and any other technical details: {}.'.format(item.content)},
-                {'role': 'user', 'content': 'Respond in json format with keys for \'notes\', \'title\', \'tags\' and \'type\', tags can be a comma seperated string, type can be either \'technical\' or \'regular\''},
-                {'role': 'user', 'content': 'Assume a non-technical audience and do not put the update or equivalent in the titles'}
-            ],
-            temperature = 0.7
-        )
-
-        return json.loads(response.choices[0].message.content.strip())
-    
 if __name__ == '__main__':
     strapi = StrapiClient()
 
