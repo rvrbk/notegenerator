@@ -12,7 +12,7 @@ if __name__ == '__main__':
     md = '# Release {}\n\n'.format(os.environ.get('RELEASE'))
 
     for note in notes:
-        md += '### {}\n{}\n\n'.format(note['attributes']['Title'], note['attributes']['Content'])
+        md += '### {} ({})\n{}\n\n'.format(note['attributes']['Title'], note['attributes']['ExternalID'], note['attributes']['Content'])
 
-    with open('external_releasenotes_{}.md'.format(os.environ.get('RELEASE')), 'w') as file:
+    with open('releasenotes_{}.md'.format(os.environ.get('RELEASE')), 'w') as file:
         file.write(md)

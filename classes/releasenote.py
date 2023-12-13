@@ -21,4 +21,7 @@ class Releasenote:
             temperature = 0.7
         )
 
-        return json.loads(response.choices[0].message.content.strip())
+        try:
+            return json.loads(response.choices[0].message.content.strip())
+        except Exception as e:
+            return False

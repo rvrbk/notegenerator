@@ -12,21 +12,24 @@ load_dotenv()
 if __name__ == '__main__':
     strapi = StrapiClient()
 
-    items = JiraStoryMapper.map(JiraStoryController.getStoriesByQuery('fixVersion = {} and type not in (Bug) order by createdDate'.format(os.environ.get('RELEASE'))))
+    items = JiraStoryMapper.map(JiraStoryController.getStoriesByQuery('status = Open and sprint is empty order by rank'))
     
     for item in items:
         releasenote = Releasenote(item.content)
 
         releasenotes = releasenote.generate()
-    
-        if strapi.post('/api/releasenotes', {'data': {
-            'Title': releasenotes['title'],
-            'Content': releasenotes['notes'],
-            'Release': os.environ.get('RELEASE'),
-            'ExternalID': item.key,
-            'Created': datetime.now().isoformat()
-        }}):
-            print('Generated note for {}'.format(item.key))
+
+        if releasenote:
+            if strapi.post('/api/releasenotes', {'data': {
+                'Title': releasenotes['title'],
+                'Content': releasenotes['notes'],
+                'Release': os.environ.get('RELEASE'),
+                'ExternalID': item.key,
+                'Created': datetime.now().isoformat()
+            }}):
+                print('Generated note for {}'.format(item.key))
+        else:
+            print('Failed to generate note for {}'.format(item.key))
 
         
 
