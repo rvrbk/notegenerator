@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 openai.api_key = os.environ.get('OPEN_AI_API_KEY')
+openai.api_type = os.environ.get('OPEN_AI_API_TYPE')
+openai.api_base = os.environ.get('OPEN_AI_API_BASE')
+openai.api_version = os.environ.get('OPEN_AI_API_VERSION')
 
 class Releasenote:
     def __init__(self, input):
@@ -11,6 +14,7 @@ class Releasenote:
 
     def generate(self):
         response = openai.ChatCompletion.create(
+            engine = 'chat',
             model = 'gpt-4',
             messages = [
                 {'role': 'system', 'content': 'You are a helpful assistant.'},

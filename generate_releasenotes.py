@@ -10,16 +10,18 @@ from classes.releasenote import Releasenote
 load_dotenv()
 
 if __name__ == '__main__':
+    failed = []
+
     strapi = StrapiClient()
 
-    items = JiraStoryMapper.map(JiraStoryController.getStoriesByQuery('status = Open and sprint is empty order by rank'))
+    items = JiraStoryMapper.map(JiraStoryController.getStoriesByQuery(os.environ.get('QUERY')))
     
     for item in items:
         releasenote = Releasenote(item.content)
 
         releasenotes = releasenote.generate()
-
-        if releasenote:
+        
+        if releasenote and releasenotes:
             if strapi.post('/api/releasenotes', {'data': {
                 'Title': releasenotes['title'],
                 'Content': releasenotes['notes'],
@@ -28,8 +30,13 @@ if __name__ == '__main__':
                 'Created': datetime.now().isoformat()
             }}):
                 print('Generated note for {}'.format(item.key))
+                failed.append(item.key)
         else:
             print('Failed to generate note for {}'.format(item.key))
+
+    if failed
+        print('Failed items:')
+        print(failed)
 
         
 
