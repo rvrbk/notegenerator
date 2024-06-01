@@ -34,7 +34,7 @@ if __name__ == '__main__':
         else:
             print('Failed to generate note for {}'.format(item.key))
 
-    if failed
+    if failed:
         print('Failed items:')
         print(failed)
 
