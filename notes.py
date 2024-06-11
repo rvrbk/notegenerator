@@ -16,7 +16,7 @@ if __name__ == '__main__':
         md += '### {} ({})\n{}\n\n'.format(note['attributes']['Title'], note['attributes']['ExternalID'], note['attributes']['Content'])
 
     if os.environ.get("MODE") == "JIRA":
-        with open('releasenotes_{}.md'.format(os.environ.get('RELEASE')), 'w') as file:
+        with open('notes/releasenotes_{}.md'.format(os.environ.get('RELEASE')), 'w') as file:
             file.write(md)
     elif os.environ.get("MODE") == "DEVOPS":
         response = requests.put(f"https://dev.azure.com/{os.environ.get('DEVOPS_ORGANIZATION')}/{os.environ.get('DEVOPS_PROJECT')}/_apis/wiki/wikis/{os.environ.get('DEVOPS_WIKI_ID')}/pages?path=Releasenotes for {os.environ.get('RELEASE')}&api-version=6.0", auth=HTTPBasicAuth('', os.environ.get('DEVOPS_PAT')), headers={
