@@ -1,3 +1,4 @@
 .env
 releasnotes.db
 notes/*
+data/*
