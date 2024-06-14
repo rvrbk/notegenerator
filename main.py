@@ -35,20 +35,6 @@ def generate():
             
             if result:
                 print('Generated note for {}'.format(item.key))
-                
-                if os.environ.get("MODE") == "DEVOPS":
-                    response = requests.patch(f'https://dev.azure.com/{os.environ.get("DEVOPS_ORGANIZATION")}/_apis/wit/workitems/{str(item.key)}/?api-version=6.0', headers={ 'Content-Type': 'application/json-patch+json' }, auth=HTTPBasicAuth('', os.environ.get('DEVOPS_PAT')), data=json.dumps([{
-                        "op": "add",
-                        "path": "/fields/Custom.ReleasenoteTitle",
-                        "value": releasenotes["title"]
-                    },{
-                        "op": "add",
-                        "path": "/fields/Custom.Releasenote",
-                        "value": releasenotes["notes"]
-                    }]))
-                    
-                    if response.status_code == 200:
-                        print('Generated devops note for {}'.format(item.key))
                         
             else:
                 print('Failed to generate note for {}'.format(item.key))
